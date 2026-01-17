@@ -35,4 +35,4 @@ Session-level datasets covering historical session data and the A/B experiment.
 
 ## Recommendations
 
-- Consider rolling out the new recommendation algorithm based on the statistically significant uplift in engagement
+- Consider rolling out the new recommendation algorithm based on the statistically significant uplift in engagement.
