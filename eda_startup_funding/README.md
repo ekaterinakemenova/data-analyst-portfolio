@@ -31,7 +31,7 @@ Company-level datasets covering startup attributes, funding rounds, investment v
 - **Funding types:** `venture`, `seed`, and `debt_financing` dominate by both total investment volume and adoption; by investment returns, `venture` leads, followed by `debt_financing` and `private_equity`.
 - **Funding rounds:** From 2005 to 2013, average funding per round declined while total rounds increased; in 2014, total rounds fell and the decline in average round size stabilized.
 - **Market growth:** The fastest-growing markets include technology, medical, internet, real estate, apps.
-- **Investment returns:** In 2014, returns exceeded invested capital for `debt_financing`, `private_equity`, and `angel`. `Venture` leads in absolute returns, but return share remained below 1.0 across most years, improving after 2013 and approaching breakeven in 2014.
+- **Return share:** In 2014, returns exceeded invested capital for `debt_financing`, `private_equity`, and `angel`. `Venture` leads in absolute returns, but return share remained below 1.0 across most years, improving after 2013 and approaching breakeven in 2014.
 
 ## Recommendations
 
