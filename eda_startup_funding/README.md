@@ -20,8 +20,7 @@ Company-level datasets covering startup attributes, funding rounds, investment v
 2. **Feature engineering** (funding timeline categories; market segmentation into mass / mid-size / niche)  
 3. **Outlier detection and filtering** (IQR-based anomaly detection; restricting to years with sufficient activity)  
 4. **Funding type analysis** (investment volume, adoption, and investment returns by funding type)  
-5. **Trend and dynamics analysis** (funding rounds over time, market growth patterns, and return share dynamics)  
-6. **Final conclusions and recommendations** 
+5. **Trend and dynamics analysis** (funding rounds over time, market growth patterns, and return share dynamics)
 
 ## Main Findings
 
