@@ -26,7 +26,7 @@ User-level datasets covering new user registrations (2025-06-01 to 2025-06-14), 
   - Absolute change: **-11.14 percentage points**
   - Relative change: **-37.73%**
 - The effect is **statistically significant** (two-proportion z-test, p-value = 6.13e-13 < 0.05).
-- Cumulative dynamics support the result: cumulative purchases grow faster in group A, while registrations and sessions are similar between groups.
+- Cumulative dynamics support the result: **cumulative purchases grow faster in group A**, while registrations and sessions are similar between groups.
 
 ## Recommendations 
 - **Do not roll out** the new payment funnel to production, as it leads to a **statistically significant and practically large drop** in purchase conversion.
