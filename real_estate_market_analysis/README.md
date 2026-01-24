@@ -25,7 +25,7 @@ Historical real estate listings for Saint Petersburg and the Leningrad Region, c
 
 ## Main Findings
 - **Market structure:** ~85% of listings are located in cities, so city-level segments drive overall demand patterns.
-- **Most common listing durations:**: In both regions, the largest share of listings remains active **181+ days (~31%)**, followed by **31–90 days** (~27% in Saint Petersburg; ~31% in Leningrad Region).
+- **Most common listing durations:** In both regions, the largest share of listings remains active **181+ days (~31%)**, followed by **31–90 days** (~27% in Saint Petersburg; ~31% in Leningrad Region).
 - **Demand drivers differ by region:**
   1. **Saint Petersburg:** Higher price per m² and larger area are associated with **longer time-to-sale**; smaller and more affordable apartments sell faster.
   2. **Leningrad Region:** The relationship between price/area and time-to-sale is weaker, indicating a more heterogeneous market.
