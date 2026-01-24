@@ -21,7 +21,9 @@ Historical real estate listings for Saint Petersburg and the Leningrad Region, c
    - Monthly distribution of listing publications and removals
    - Comparison of seasonal peaks and troughs across activity types
    - Evaluation of monthly dynamics in price per m² and average property size
-4. **Dashboard creation in DataLens**
+4. **Dashboard creation in DataLens** (high-level market overview for fast visual assessment of demand, pricing, seasonality)
+
+[Real Estate Market Dashboard: Saint Petersburg & Leningrad Region](https://datalens.yandex/gh9896mkuyl21)
 
 ## Main Findings
 - **Market structure:** ~85% of listings are located in cities, so city-level segments drive overall demand patterns.
@@ -33,6 +35,5 @@ Historical real estate listings for Saint Petersburg and the Leningrad Region, c
 - **Seasonality:** Market activity peaks in **autumn (September–November)** and is lowest in **spring (April–May)**. Seasonality affects listing volume, not prices or apartment size.
 
 ## Recommendations
-
 - **Plan market entry and major marketing campaigns for autumn (Sep–Nov)** when both supply and demand are at their highest.
 - **Differentiate strategy by region:** In **Saint Petersburg**, expect **longer sales cycles** for **large and expensive** properties. For faster turnover, prioritize smaller and more affordable inventory, which tends to exit the market quicker.
