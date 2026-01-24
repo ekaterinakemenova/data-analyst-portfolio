@@ -1,0 +1,556 @@
+---
+title: 'Case Study: Cyclistic'
+author: "Ekaterina Kemenova"
+date: "2025-11-15"
+output:
+  pdf_document:
+    latex_engine: xelatex
+    toc: true
+    toc_depth: 3
+    number_sections: true
+  html_document:
+    toc: true
+    toc_depth: '3'
+    df_print: paged
+  word_document: default
+fontsize: 12pt
+geometry: margin=1in
+---
+
+# Introduction
+
+**Background**: Cyclistic is a Chicago-based bike-share program with over 5,800 bicycles and 600 docking stations. Its pricing structure includes single-ride passes, full-day passes, and annual memberships, with casual riders purchasing short-term passes and members committing to annual plans. Because annual members generate higher long-term revenue, the executive and marketing teams aim to increase membership by converting existing casual riders into annual members. To support this goal, they seek data-driven insights into how the two groups differ in their usage patterns.
+
+**Objective**: To analyze how annual members and casual riders use the Cyclistic bike-share program differently, in order to generate insights that will inform Cyclistic’s marketing strategy aimed at converting casual riders into annual members.
+
+**Tasks**:
+
+ 1. Prepare and merge the Q1 2019 and Q1 2020 Cyclistic datasets.
+ 2.	Clean the data by fixing formats, standardizing fields and removing invalid records.
+ 3.	Analyze usage patterns of members vs casual riders across trip duration, time, and geography.
+ 4.	Assess demographic differences between rider groups where data is available.
+ 5.	Visualize key findings to illustrate behavioral patterns.
+ 6.	Formulate actionable recommendations to support converting casual riders into annual members.
+	
+# Data import and overview
+
+Loading the packages necessary for the analysis:
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+library(ggplot2)
+library(tidyverse)
+library(skimr)
+library(janitor)
+library(lubridate)
+```
+
+This analysis uses Cyclistic’s historical bike trip data from Q1 2019 and Q1 2020 containing detailed records of individual rides. Two separate datasets represent these time periods:
+
+```{r, results='hide', message=FALSE, warning=FALSE}
+df_2019 <- read_csv("Trips_2019_Q1.csv")
+df_2020 <- read_csv("Trips_2020_Q1.csv")
+```
+Inspecting the data:
+
+```{r}
+head(df_2019)
+head(df_2020)
+```
+
+```{r}
+glimpse(df_2019)
+glimpse(df_2020)
+```
+
+The datasets have similar structure but slightly different column names and formats. 
+
+- The 2019 Q1 dataset contains 12 columns and 365,069 rows, including trip identifiers, start and end timestamps (stored as character values), station IDs and names, trip duration in seconds, rider type (Subscriber or Customer), gender, and birth year. 
+ 
+- The 2020 Q1 dataset contains 13 columns and 426,887 rows, including ride IDs, bike types, start and end timestamps, station information, GPS coordinates for trip start and end locations, and a rider classification variable. 
+
+The column names accurately reflect the contents of the data and follow an appropriate naming convention. Most columns use correct data types; however, before analysis, timestamps must be converted from chr to appropriate datetime formats. The datasets will then be standardized and merged to allow consistent comparison of member and casual rider behavior across the two years.
+
+# Data preparation 
+
+Converting the timestamp fields:
+
+```{r}
+df_2019 <- df_2019 %>% 
+  mutate(
+    start_time = ymd_hms(start_time),
+    end_time   = ymd_hms(end_time)
+  )
+```
+
+```{r}
+df_2020 <- df_2020 %>% 
+  mutate(
+    started_at = ymd_hms(started_at),
+    ended_at   = ymd_hms(ended_at)
+  )
+```
+
+Changing the column names for consistency:
+
+```{r}
+df_2020 <- df_2020 %>%
+  rename(
+    start_time = started_at, 
+    end_time = ended_at, 
+    trip_id = ride_id, 
+    user_type = member_casual
+    )
+```
+
+```{r}
+df_2019 <- df_2019 %>%
+  rename(
+    birth_year = birthyear,
+    bike_id = bikeid,
+    trip_duration = tripduration,
+    user_type = usertype,
+    start_station_name = from_station_name,
+    end_station_name = to_station_name,
+    start_station_id = from_station_id,
+    end_station_id = to_station_id
+  )
+```
+
+```{r}
+unique(df_2019$user_type)
+unique(df_2020$user_type)
+```
+
+For the `user_type` column, we assume that the values “Subscriber” and “Customer” correspond to “member” and “casual rider,” respectively. Therefore, we will recode these values to ensure consistency across both datasets.
+
+```{r}
+df_2019 <- df_2019 %>% 
+  mutate(user_type = case_when(
+    user_type == "Subscriber" ~ "member",
+    user_type == "Customer"   ~ "casual",
+    TRUE ~ user_type
+  ))
+```
+
+Based on the timestamp fields, we will create a `trip_duration` variable in the 2020 dataset so that it can be directly compared to the 2019 dataset.
+
+```{r}
+df_2020 <- df_2020 %>% 
+  mutate(trip_duration = as.numeric(end_time - start_time))
+```
+
+Checking for errors in the `trip_duration` field (zero or negative values):
+
+```{r}
+df_2019 %>% filter(trip_duration <= 0)
+df_2020 %>% filter(trip_duration <= 0)
+```
+
+We found 210 rows with zero or negative values in the `trip_duration` column in the 2020 dataset. These entries are invalid and must be filtered out:
+
+```{r}
+df_2020 <- df_2020 %>%
+  filter(trip_duration > 0)
+```
+
+We also identified rows where the start or end station name is listed as “HQ QR.” We assume these entries represent internal bike movements by the company rather than customer trips. Therefore, these rows should be filtered out as well:
+
+```{r}
+df_2019 %>% filter(start_station_name == "HQ QR" | end_station_name == "HQ QR")
+df_2020 %>% filter(start_station_name == "HQ QR" | end_station_name == "HQ QR")
+```
+
+```{r}
+df_2020 <- df_2020 %>%
+  filter(start_station_name != "HQ QR" & end_station_name != "HQ QR")
+```
+
+In this step, the datasets were checked for errors and standardized to ensure consistency. Timestamp fields were converted to proper datetime formats, column names were aligned, rider types were recoded to a common format. A `trip_duration` variable was also created for the 2020 data to match the 2019 dataset, and rows with zero or negative trip durations were filtered out. Additionally, records associated with internal bike movements (“HQ QR”) were filtered out to ensure that only customer trips remained. These transformations prepare the data for accurate comparison and analysis.
+
+# Data cleaning
+
+Checking for missing values:
+
+```{r}
+colSums(is.na(df_2019))
+colSums(is.na(df_2020))
+```
+```{r}
+colMeans(is.na(df_2019))
+colMeans(is.na(df_2020))
+```
+In the 2019 dataset, there are missing values in two columns: `gender` (about 5%) and `birth_year` (about 5%). We cannot reliably replace these missing values without additional information from the dataset creators, so we will leave them as they are.
+
+Checking for duplicates:
+
+```{r}
+sum(duplicated(df_2019))
+sum(duplicated(df_2020))
+```
+
+No exact duplicates were found in the data. Now let’s check for non-exact duplicates:
+
+```{r}
+df_2019 %>% filter(duplicated(trip_id))
+df_2020 %>% filter(duplicated(trip_id))
+```
+We confirmed that trip identifiers are unique in both datasets.
+
+Normalizing the station name fields by converting them to lowercase and removing extra whitespace to ensure that formatting differences do not produce false duplicates:
+
+```{r}
+df_2019 <- df_2019 %>% 
+  mutate(across(c(start_station_name, end_station_name),
+                ~ tolower(trimws(.))))
+df_2020 <- df_2020 %>% 
+  mutate(across(c(start_station_name, end_station_name),
+                ~ tolower(trimws(.))))
+```
+
+```{r}
+sum(duplicated(df_2019))
+sum(duplicated(df_2020))
+```
+
+After normalizing the station name columns, no duplicates were found.
+
+In this step, the datasets were examined for missing values and duplicates to ensure data quality. The 2019 dataset contained missing values only in the gender and birth_year fields, which could not be reliably imputed and were therefore left unchanged. No exact or non-exact duplicates were found, and station name fields were standardized to prevent false duplicates. The cleaned datasets are now ready for reliable analysis.
+
+# Data analysis
+
+Merging the datasets for analysis:
+
+```{r}
+df_2019 <- df_2019 %>% mutate(trip_id = as.character(trip_id))
+df_2020 <- df_2020 %>% mutate(trip_id = as.character(trip_id))
+```
+
+```{r}
+df <- bind_rows(df_2019, df_2020)
+```
+
+```{r}
+glimpse(df)
+```
+```{r}
+summary(df)
+```
+
+## Trip duration and temporal patterns
+We can see that the `trip_duration` column contains anomalous values. The median (539 seconds) is less than half of the mean (1189 seconds), which indicates the presence of outliers. The maximum value (10,628,400 seconds) appears to be an error. 
+
+```{r}
+p99 <- quantile(df$trip_duration, 0.99, na.rm = TRUE)
+p99
+```
+
+```{r}
+df %>% 
+  filter(trip_duration > p99)
+```
+
+We identified 7,874 rows with `trip_duration` values above the 0.99 quantile. These extreme values represent outliers and should be removed from the dataset.
+
+```{r}
+df <- df %>% 
+  filter(trip_duration <= p99)
+```
+
+```{r}
+ggplot(df, aes(x = trip_duration)) +
+  geom_histogram(bins = 50, fill = "steelblue", color = "white") +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Distribution of trip duration",
+    x = "Trip duration (seconds)",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+summary(df$trip_duration)
+```
+
+The distribution is right-skewed, indicating that most trips are relatively short (typically between 300 and 900 seconds ≈ 5 and 15 minutes), as shown by the median (535 seconds ≈ 8.9 minutes) and the third quartile (895 seconds ≈ 15 minutes). The mean (716 seconds) is higher than the median, confirming the presence of a long tail of less frequent, longer trips. Overall, the distribution shows that very long rides are uncommon and that the vast majority of trips fall well below the upper end of the range.
+
+```{r}
+ggplot(df, aes(x = trip_duration)) +
+  geom_histogram(bins = 50, fill = "steelblue", color = "white") +
+  scale_x_continuous(labels = scales::comma) +
+  facet_wrap(~ user_type, scales = "free_y") +
+  labs(
+    title = "Distribution of trip duration by user type",
+    x = "Trip duration (seconds)",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+df %>% 
+  group_by(user_type) %>% 
+  summarise(
+    Min = min(trip_duration, na.rm = TRUE),
+    Q1 = quantile(trip_duration, 0.25, na.rm = TRUE),
+    Median = median(trip_duration, na.rm = TRUE),
+    Mean = mean(trip_duration, na.rm = TRUE),
+    Q3 = quantile(trip_duration, 0.75, na.rm = TRUE),
+    Max = max(trip_duration, na.rm = TRUE)
+  )
+```
+
+The distributions show clear differences between user groups. Casual riders tend to take longer trips, while members have shorter and more consistent ride durations. The median trip duration for casual riders is 1268 seconds (~21 minutes), more than twice that of members (507 seconds ~8.5 minutes). Their upper range is also much higher: the 75th percentile for casual riders is 1941 seconds (~32 minutes), compared to 820 seconds (~13.7 minutes) for members. This suggests that casual users are more likely to ride for leisure or occasional outings, while members primarily use the service for short, routine travel.
+
+Let’s create several additional columns to enable aggregation at the hourly, weekday and monthly levels. This will allow us to analyze how trip patterns change over time.
+
+```{r}
+df <- df %>% 
+  mutate(
+    hour = hour(start_time),
+    weekday = wday(start_time, label = TRUE, abbr = TRUE),
+    month = month(start_time, label = TRUE, abbr = TRUE),
+    year = year(start_time),
+  )
+```
+
+```{r}
+df %>%
+  group_by(user_type, hour) %>%
+  summarise(
+    number_of_rides = n(),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = hour, y = number_of_rides, color = user_type)) +
+  
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  
+  facet_wrap(~ user_type, ncol = 1, scales = "free_y") +
+  
+  scale_x_continuous(breaks = 0:23) +
+  scale_color_manual(values = c("member" = "steelblue", "casual" = "tomato")) +
+  
+  labs(
+    title = "Hourly ride volume by user type",
+    x = "Hour of day",
+    y = "Number of rides"
+  ) +
+  
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(size = 12),
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r}
+df %>%
+  group_by(user_type, weekday) %>%
+  summarise(
+    number_of_rides = n(),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = weekday, y = number_of_rides, fill = user_type)) +
+  
+  geom_col() +
+  
+  facet_wrap(~ user_type, ncol = 1, scales = "free_y") +
+  
+  labs(
+    title = "Ride volume by day of the week",
+    x = "Day of week",
+    y = "Number of rides"
+  ) +
+  
+  scale_fill_manual(values = c("member" = "steelblue", "casual" = "tomato")) +
+  
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(size = 12),
+    panel.grid.minor = element_blank()
+  )
+```
+
+
+```{r}
+df %>%
+  group_by(user_type, weekday) %>%
+  summarise(
+    avg_trip_duration_min = mean(trip_duration, na.rm = TRUE) / 60,
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = weekday, y = avg_trip_duration_min, group = user_type, color = user_type)) +
+  
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  
+  facet_wrap(~ user_type, ncol = 1) + 
+  
+  scale_color_manual(values = c("member" = "steelblue", "casual" = "tomato")) +
+  
+  labs(
+    title = "Average trip duration by day of the week",
+    x = "Day of week",
+    y = "Average trip duration (minutes)"
+  ) +
+  
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(size = 12),
+    panel.grid.minor = element_blank()
+  )
+```
+
+The hourly and weekday patterns show distinct usage behaviors between casual riders and members. Members show strong commuting trends, with ride peaks during typical rush hours (around 8 AM and 5 PM), the highest activity on weekdays, especially Tuesday–Thursday, and consistently short trips (about 10-13 minutes). Casual riders follow a leisure-oriented pattern: their activity gradually increases throughout the day, peaking in the afternoon (around 1 PM - 5 PM), and is highest on weekends. They also take longer trips (21–28 minutes), especially on Saturdays and Sundays.
+
+```{r}
+df %>%
+  group_by(user_type, month) %>%
+  summarise(
+    number_of_rides = n(),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(x = month, y = number_of_rides, fill = user_type)) +
+  
+  geom_col() +
+  
+  facet_wrap(~ user_type, ncol = 1, scales = "free_y") +
+  
+  labs(
+    title = "Monthly ride volume by user type",
+    x = "Month",
+    y = "Number of rides"
+  ) +
+  
+  scale_fill_manual(values = c("member" = "steelblue", "casual" = "tomato")) +
+  
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(size = 12),
+    panel.grid.minor = element_blank()
+  )
+```
+
+We do not have enough data to analyze full seasonality, but based on the available months (January, February, and March), we can see that seasonality affects casual riders much more than members. Casual ridership rises sharply in March, more than doubling compared to January and February, while member ridership stays relatively stable across all three months. This indicates that casual users are more sensitive to weather and seasonal conditions, whereas members ride consistently. However, this pattern should be confirmed using data from the full year.
+
+## Station usage and geographic trends
+
+```{r}
+top_start_stations <- df %>%
+  group_by(user_type, start_station_name) %>%
+  summarise(rides = n(), .groups = "drop") %>%
+  arrange(user_type, desc(rides))
+
+top_start_stations %>%
+  group_by(user_type) %>%
+  slice_head(n = 10)
+```
+```{r}
+top_end_stations <- df %>%
+  group_by(user_type, end_station_name) %>%
+  summarise(rides = n(), .groups = "drop") %>%
+  arrange(user_type, desc(rides))
+
+top_end_stations %>%
+  group_by(user_type) %>%
+  slice_head(n = 10)
+```
+The station analysis shows a clear geographic split between user groups. Casual riders primarily start and end trips at tourist destinations such as Streeter Dr & Grand Ave, Lake Shore Dr & Monroe St, Shedd Aquarium, Millennium Park. Members, in contrast, concentrate around transit and business hubs near Union Station, such as Canal St & Adams St and Clinton St & Washington Blvd. This reinforces earlier findings: casual riders tend to use the service for leisure and recreation, while members use it for routine commuting.
+
+## Demographic profiles of riders
+
+```{r}
+df <- df %>%
+  mutate(age = year(start_time) - birth_year)
+
+df_age <- df %>%
+  filter(age <= 90)
+
+age_dist <- df_age %>%
+  group_by(user_type) %>%
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    median_age = median(age, na.rm = TRUE),
+    count = n()
+  )
+
+age_dist
+```
+
+```{r}
+df_age %>%
+  ggplot(aes(x = age)) +
+  geom_histogram(bins = 40, fill = "steelblue", color = "white") +
+  facet_wrap(~ user_type, scales = "free_y") +
+  labs(
+    title = "Age distribution by user type",
+    x = "Age",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+```{r}
+gender_pie <- df %>%
+  filter(!is.na(gender)) %>%
+  group_by(user_type, gender) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(user_type) %>%
+  mutate(
+    share = count / sum(count),
+    percent_label = scales::percent(share, accuracy = 1)
+  ) %>%
+  arrange(user_type, desc(share)) %>%
+  group_by(user_type) %>%
+  mutate(ypos = cumsum(share) - 0.5 * share)
+
+gender_pie %>%
+  ggplot(aes(x = "", y = share, fill = gender)) +
+  geom_col(width = 1, color = "white") +
+  geom_text(aes(y = ypos, label = percent_label), color = "white", size = 6, fontface = "bold") +
+  coord_polar("y") +
+  facet_wrap(~ user_type) +
+  scale_fill_manual(values = c(
+    "Male" = "steelblue",
+    "Female" = "tomato"
+  )) +
+  labs(
+    title = "Gender distribution by user type",
+    fill = "Gender"
+  ) +
+  theme_void(base_size = 12) +
+  theme(
+    strip.text = element_text(size = 12),
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+The demographic patterns show that casual riders are younger than members. The average casual rider is about 29 years old (median 28), while members are older, averaging 37 years (median 34). Gender distribution also differs: casual riders are more balanced (69% male, 31% female), whereas members are predominantly male (81% male, 19% female).
+
+However, it is important to acknowledge that these findings are based solely on Q1 2019 data. Therefore, the conclusions should be validated against a more complete dataset before being considered definitive.
+
+# Key findings and recommendations
+
+The analysis reveals consistent differences between casual riders and annual members across trip duration, usage patterns, geography and demographics: 
+
+ * **Members** show strong commuter-driven behavior, with ride activity peaks around 8 AM and 5 PM, higher activity on weekdays, and short trips (average ~ 9 minutes). Their most frequently used stations are concentrated around major transportation hubs and business districts.
+ * **Casual riders** follow leisure-oriented behavior, with usage peaking in the afternoon, highest activity on weekends, and longer rides (average ~ 21 minutes). Their most popular stations include key tourist attractions.
+
+Seasonality further highlights these differences: casual ridership more than doubles from winter to early spring, while member ridership remains stable. Demographically, casual riders are younger (average ~29) and more gender-balanced (69% male, 31% female), whereas members are older (average ~37) and predominantly male (81%).
+
+It should be acknowledged that the seasonality and demographic analyses are based on limited data. Therefore, these findings should be interpreted with caution and validated using a full-year dataset before drawing definitive conclusions.
+
+## Recommendations:
+
+Based on the analysis, Cyclistic should focus its conversion efforts on local casual riders with repeat usage while also broadening overall membership acquisition.
+
+ 1. **Target frequent casual riders with flexible or seasonal membership offers** Casual riders typically take longer leisure trips, ride most often on weekends, and show seasonal growth. Cyclistic could introduce flexible or seasonal membership plans (e.g., a 3-month summer membership or weekend membership) and push in-app promotions when riders exceed a certain number of trips in a month. 
+
+ 2. **Promote commuting-related benefits to casual riders who ride on weekdays** Some casual riders still travel during peak weekday hours, indicating potential commuting habits. Cyclistic should identify these riders and offer commuter-focused incentives, such as discounted morning rides for the first month of membership or priority bike availability.
+ 
+ 3. **Address the gender gap by tailoring marketing and safety-focused messaging to women** Women represent 31% of casual riders but only 19% of annual members, indicating an untapped conversion opportunity. Cyclistic could test campaigns focused on safety, well-lit stations, route recommendations, and partnerships with women-focused community groups.
+
+ 4. **Expand acquisition efforts beyond the casual rider base** Since many casual riders are likely tourists and not viable membership prospects, Cyclistic should combine targeted conversions with broader outreach. This includes deploying signage, digital ads, and employer partnerships near major commuter hubs. Messaging should emphasize reliability, cost efficiency for daily travel, and exclusive member benefits.
