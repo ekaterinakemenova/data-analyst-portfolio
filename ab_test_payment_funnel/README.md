@@ -1,4 +1,4 @@
-# A/B Test: Payment Funnel Conversion
+# A/B Test: Impact of a New Payment Funnel on Purchase Conversion
 
 ## Goal
 Analyze the results of an A/B experiment conducted by a large e-commerce platform to evaluate the impact of a redesigned payment funnel on purchase conversion.
