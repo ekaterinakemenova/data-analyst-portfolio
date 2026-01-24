@@ -24,14 +24,14 @@ Session-level datasets covering historical user behavior and the A/B experiment 
 
 ## Main Findings
 
-- The primary metric — **share of successful sessions** (sessions with 4+ page views) — increased in the test group  
+- The primary metric — **share of successful sessions** (sessions with 4+ page views) — increased in the test group.  
 - Test group vs. control group:
   - Control (A): ~30.8% successful sessions  
   - Test (B): ~31.8% successful sessions  
   - Absolute uplift: **~1.1 percentage points**  
   - Relative uplift: **~3.4%**  
-- The effect is **statistically significant** (two-proportion z-test, p-value = 0.0003)  
-- All experiment health checks passed: balanced group sizes, no user overlap, and similar device and regional distributions  
+- The effect is **statistically significant** (two-proportion z-test, p-value = 0.0003).  
+- All experiment health checks passed: balanced group sizes, no user overlap, and similar device and regional distributions. 
 
 ## Recommendations
 
