@@ -2,7 +2,7 @@
 
 ## Goal
 
-Conduct an exploratory analysis of the dynamics and structure of startup funding using historical data (1999-2014), in order to assess investment opportunities and inform a hypothetical market entry and company acquisition strategy.
+Conduct an exploratory analysis of the dynamics and structure of startup funding using historical data (1999-2014), in order to assess investment opportunities and inform a market entry and company acquisition strategy.
 
 ## Tools & Stack
 
