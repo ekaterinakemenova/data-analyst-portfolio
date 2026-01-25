@@ -33,4 +33,3 @@ Anonymized data from the DonorSearch platform, including: donor profiles and agg
 - **Expand bonus programs:** Test broader and more targeted bonus programs to increase engagement beyond the current small but highly active bonus-using group.
 - **Improve donation planning workflows:** Introduce reminders, flexible rescheduling, and clearer follow-ups to increase plan-to-donation conversion rates.
 - **Target core demographic segments:** Prioritize engagement and retention efforts for donors aged **25-44**, particularly men, as this group generates the largest share of confirmed donations.
-- **Investigate the 2023 decline:** Explore external factors or product changes that may explain the observed decrease in donation activity in 2023.
