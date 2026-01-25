@@ -4,7 +4,7 @@
 Analyze historical real estate listings in Saint Petersburg and the Leningrad Region to identify high-demand market segments and seasonal patterns, in order to support data-driven market entry and marketing decisions.
 
 ## Tools & Stack
-- **Language:** SQL  
+- **Language:** SQL (PostgreSQL)  
 - **BI tool:** Yandex DataLens  
 - **Format:** SQL scripts + interactive dashboard
 
