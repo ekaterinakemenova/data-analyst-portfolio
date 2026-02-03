@@ -36,8 +36,7 @@ Anonymized order-level and event-level datasets from Yandex Afisha covering the 
 - **Category stability with minor shifts:** Concerts dominate in both seasons (~42% of orders in summer, ~36% in autumn). Theater ranks second and increases its share in autumn, likely reflecting increased demand for indoor events.  
 - **Mobile-first behavior:** ~80% of all orders are placed via mobile devices, with no significant seasonal variation.
 - **Pricing dynamics:** Average ticket revenue declines across most categories in autumn, while exhibitions and stand-up see price growth, indicating differences in price sensitivity by category.
-- **Price-driven order spikes:** Sharp increases in order volume and orders per user occur at the beginning and end of the month, accompanied by lower average ticket prices, suggesting the impact of discounts and promotions.
-- **Weekday activity:** Tuesdays show the highest order volume and the lowest average ticket prices, suggesting that demand is largely driven by discounts.
+- **Promotion-driven demand:** Order volume and orders per user peak at the beginning/end of the month and on Tuesdays, coinciding with lower average ticket prices, indicating the impact of discounts and promotions.
 - **High concentration by regions and partners:** Two regions account for ~44% of events and 46% of orders, while six ticketing partners generate ~ 74% of total revenue.
 - **Device-related behavioral differences:** Mobile users place more orders on average, with no significant difference in purchase frequency compared to desktop users.
 
