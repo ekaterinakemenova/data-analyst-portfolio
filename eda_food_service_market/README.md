@@ -1,4 +1,4 @@
-# EDA: Moscow Food Service Market Analysis
+# EDA: Moscow Food Service Market
 
 ## Goal
 Conduct an exploratory analysis of the Moscow food service market as of summer 2022 to understand its structure and key patterns and to support data-driven decisions on market entry.
