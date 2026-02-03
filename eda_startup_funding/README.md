@@ -1,4 +1,4 @@
-# EDA: Startup Funding Analysis
+# EDA: Startup Funding
 
 ## Goal
 
