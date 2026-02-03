@@ -31,7 +31,6 @@ Anonymized order-level and event-level datasets from Yandex Afisha covering the 
 3. Statistical hypothesis testing: comparison of mobile vs. desktop user behavior
 
 ## Main Findings
-
 - **Strong seasonality:** Order volume and active users increase steadily from summer to autumn, driven by seasonal demand.
 - **Category stability with minor shifts:** Concerts dominate in both seasons (~42% of orders in summer, ~36% in autumn). Theater ranks second and increases its share in autumn, likely reflecting increased demand for indoor events.  
 - **Mobile-first behavior:** ~80% of all orders are placed via mobile devices, with no significant seasonal variation.
