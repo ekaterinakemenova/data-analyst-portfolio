@@ -10,7 +10,7 @@ Calculate and analyze key business and product metrics of a food delivery servic
 
 - **Language:** SQL (PostgreSQL)  
 - **BI tool:** Yandex DataLens  
-- **Format:** SQL queries → interactive dashboard  
+- **Format:** SQL scripts + interactive dashboard
 
 ## Data
 
