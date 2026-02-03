@@ -1,7 +1,7 @@
 # Yandex Afisha: Seasonal Demand & User Behavior Analysis
 
 ## Goal
-Conduct an exploratory and statistical analysis of ticket booking data from Yandex Afisha, an event discovery and ticketing service, in order to identify seasonal changes in user behavior and event demand in autumn 2024, and support planning for sales and promotional campaigns.
+Conduct an exploratory and statistical analysis of ticket booking data from Yandex Afisha, an event discovery and ticketing service, in order to identify seasonal changes in user behavior and event demand in autumn 2024 and support planning for promotional campaigns.
 
 ## Tools & Stack
 - **Languages:** SQL (PostgreSQL), Python
