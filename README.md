@@ -1,4 +1,6 @@
-This repository contains a portfolio of data analytics projects covering data preprocessing, EDA, statistical hypothesis testing, A/B testing, business metrics analysis, and dashboards ascross e-commerce, healthcare, real estate, food delivery, entertainment, and nonprofit sectors. Completed as part of the Yandex Practicum Data Analytics program and the Google Data Analytics Professional Certificate (Coursera).
+This repository contains a portfolio of data analytics projects covering data preprocessing, EDA, statistical hypothesis testing, A/B testing, business metrics analysis, and dashboards ascross e-commerce, healthcare, real estate, food delivery, entertainment, and nonprofit sectors. 
+
+Completed as part of the Yandex Practicum Data Analytics program and the Google Data Analytics Professional Certificate (Coursera).
 
 ## Projects
 
